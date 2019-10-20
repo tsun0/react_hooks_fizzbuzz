@@ -1,10 +1,13 @@
 import React, {FC, useState, useEffect} from 'react'
-import {Button, Card, Statistic} from 'semantic-ui-react';
+import {Button, Card, Icon, Statistic} from 'semantic-ui-react';
 
 import './App.css';
 
+const LIMIT = 60;
+
 const App: FC = () => {
   const [count, setCount] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(LIMIT);
 
   const answer = (count:number) => {
     if (count === 0) {
@@ -33,8 +36,17 @@ const App: FC = () => {
   };
 
   useEffect(() => {
-    console.log('Please click button!')
+    const timerId = setInterval(tick, 1000);
+    return () => clearInterval(timerId);
   }, [])
+
+  const resetTime = () => {
+    setTimeLeft(LIMIT);
+  };
+
+  const tick = () => {
+    setTimeLeft(prevTime => (prevTime === 0 ? LIMIT : prevTime - 1));
+  }
 
   return (
     <div className="container">
@@ -51,6 +63,17 @@ const App: FC = () => {
           </div>
           <Card.Header className="center">FizzBuzz?</Card.Header>
           <Card.Description className="center">{answer(count)}</Card.Description>
+        </Card.Content>
+      </Card>
+      <Card>
+        <Statistic className="number-board">
+          <Statistic.Label>timer</Statistic.Label>
+          <Statistic.Value>{timeLeft}</Statistic.Value>
+        </Statistic>
+        <Card.Content>
+          <Button color="red" fluid onClick={resetTime}>
+            <Icon name="redo" />Reset
+          </Button>
         </Card.Content>
       </Card>
     </div>
